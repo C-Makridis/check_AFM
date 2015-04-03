@@ -4,7 +4,18 @@
 from my_functions import checkAFM
 import Tkinter
 from Tkinter import *
+import sys
 
+#If run from console, with arguments
+if len(sys.argv) > 1:
+  result = dict()
+  for i in sys.argv[1:]:
+    result[i]=checkAFM(i)
+  for i in result:
+    print i + "\t" + str(result.get(i, "N/A"))
+  sys.exit(0)
+
+#Or go for GUI
 def checkme(): #check the input and accordingly give the output...
   if txt.get()=="":
     txt.config(bg="WHITE")
