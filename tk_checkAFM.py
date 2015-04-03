@@ -6,13 +6,10 @@ import Tkinter
 from Tkinter import *
 import sys
 
-#If run from console, with arguments
+#If executed from console, with arguments
 if len(sys.argv) > 1:
-  result = dict()
   for i in sys.argv[1:]:
-    result[i]=checkAFM(i)
-  for i in result:
-    print i + "\t" + str(result.get(i, "N/A"))
+    print i + "\t" + str(checkAFM(i))
   sys.exit(0)
 
 #Or go for GUI
@@ -21,11 +18,9 @@ def checkme(): #check the input and accordingly give the output...
     txt.config(bg="WHITE")
     lbl.config(text="Παρακαλώ εισάγετε έναν ΑΦΜ για έλεγχο")
   elif checkAFM(txt.get()):
-    #print "OK"
     txt.config(bg="GREEN")
     lbl.config(text="Έγκυρο ΑΦΜ. Εισάγετε επόμενο")
   else:
-    #print "Not OK"
     txt.config(bg = "RED" )
     lbl.config(text="Λάθος ΑΦΜ. Εισάγετε επόμενο")
 
@@ -45,10 +40,6 @@ txt.bind("<Return>", lambda event: checkme() )
 txt.bind("<KP_Enter>", lambda event: checkme() )
 txt.pack()
 
-
-#submit_btn = Button(main_window, text="Έλεγχος", command=checkme)
-#submit_btn.pack()
-#.pack() can be done in one step!
 Button(main_window, text="Έλεγχος", command=checkme).pack()
 
 # Go, Go, Go!!!!
