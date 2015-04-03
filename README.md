@@ -20,3 +20,4 @@ Returns a tab seperated list of AFM's, followed by either "True" (=valid AFM) or
 
 ##GUI
 Just double click.... I think it's quite self-explanatory
+You could also launch from console without any arguments.
