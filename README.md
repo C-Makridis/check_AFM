@@ -27,6 +27,7 @@ It is one single file, that you could:
 * `checkAFM.py -o FILE` to redirect output to a file.
 * add `-t` to force the program return only data that are found to be valid AFM's.
 * add `-f` to force the program return only data that are found to by invalid AFM's.
+* add `-s` to include the number of valid and invalid AFM's at the end of the output.
 
 Note that `-t` and `-f` are mutually exclusive.
 If you ommit both of them, instead of a list of data, you would get a tab seperated set of AFM's with either `True` or `False` next to it.

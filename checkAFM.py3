@@ -24,7 +24,10 @@ def checkAFM(afm):
 def tui():
   #If executed from console, with arguments
   
+  counter={"True":0, "False":0} #just to show some statistics at the end
+  
   def filter_output(afm, applied_filter):
+    counter[str(checkAFM(afm))] += 1
     if applied_filter == None:
       return afm + "\t" + str(checkAFM(afm))+"\n"
     elif applied_filter == True and checkAFM(afm) == True:
@@ -41,6 +44,7 @@ def tui():
 			  help="Return only a list of invalid AFM's. Breaks -t!")
   arg_parser.add_argument("-i", "--input_file", nargs=1, help="File to read AFM's from. It should have one entry per line.")
   arg_parser.add_argument("-o", "--output_file", nargs=1, help="File to save results to.")
+  arg_parser.add_argument("-s", "--stats", action="store_const", const=True, help="Show number of valid and invalid AFM's at the end.")
   arg_parser.add_argument("-v", "--version", action="version", version="P3x / 1.0")
   arg_parser.add_argument("AFM", nargs="*")
   args = arg_parser.parse_args()
@@ -72,7 +76,13 @@ def tui():
           output_file.write(a) 
         else:
           print(a.strip())
-
+  if args.stats:
+    if args.output_file:
+      output_file.write("---------\n" + str(counter["True"]) + " valid and " + str(counter["False"]) + 
+	" invalid AFM's where found in a total of " + str( counter["True"] + counter["False"] ) + " entries.")
+    else:
+      print("---------\n" + str(counter["True"]) + " valid and " + str(counter["False"]) + 
+	" invalid AFM's where found in a total of " + str( counter["True"] + counter["False"] ) + " entries.")
 #========================================================================
 def gui():
   try:
