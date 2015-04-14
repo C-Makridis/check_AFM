@@ -21,19 +21,21 @@ def checkAFM(afm):
       return True
   return False
 #========================================================================
+
 def tui():
   #If executed from console, with arguments
   
   counter={"True":0, "False":0} #just to show some statistics at the end
   
   def filter_output(afm, applied_filter):
-    counter[str(checkAFM(afm))] += 1
+    result = checkAFM(afm)
+    counter[str(result)] += 1
     if applied_filter == None:
-      return afm + "\t" + str(checkAFM(afm))+"\n"
-    elif applied_filter == True and checkAFM(afm) == True:
-      return afm+"\n"
-    elif applied_filter == False and checkAFM(afm) == False:
-      return afm+"\n"
+      return afm + "\t" + result + "\n"
+    elif applied_filter == True and result == True:
+      return afm + "\n"
+    elif applied_filter == False and result == False:
+      return afm + "\n"
   
   import argparse
   arg_parser = argparse.ArgumentParser(description = "Utility to check if input is a valid AFM (Greek VAT number). Input file should have one entry per line",
@@ -86,38 +88,55 @@ def tui():
 #========================================================================
 def gui():
   try:
-    from tkinter import Tk, Label, Entry, Button
+    from tkinter import Tk, ttk
+    from tkinter.ttk import Button, Entry, Label, Style
   except:
     sys.exit("tkinter does not seem to be available at your system. Aborting.")
-
+  
   def checkme(): #check the input and accordingly give the output...
-    if txt.get()=="":
-      txt.config(bg="WHITE")
-      lbl.config(text="Παρακαλώ εισάγετε έναν ΑΦΜ για έλεγχο")
-    elif checkAFM(txt.get()):
-      txt.config(bg="GREEN")
-      lbl.config(text="Έγκυρο ΑΦΜ. Εισάγετε επόμενο")
+    if txt_f_single_entry.get()=="":
+      lbl_f_single_result.config(text="", style="TLabel")
+    elif checkAFM(txt_f_single_entry.get()):
+      lbl_f_single_result.config(text="Έγκυρο ΑΦΜ.", style="valid.TLabel")
     else:
-      txt.config(bg = "RED" )
-      lbl.config(text="Λάθος ΑΦΜ. Εισάγετε επόμενο")
+      lbl_f_single_result.config(text="Άκυρο ΑΦΜ.", style="invalid.TLabel")
 
   #create the window
   main_window = Tk()
   main_window.title("Έλεγχος εγκυρότητας Α.Φ.Μ.")
-  main_window.geometry("300x70")
-  main_window.minsize(300,70)
+  main_window.geometry("400x150")
+  main_window.minsize(400,150)
 
-  #add some widgets in it
-  lbl = Label(main_window, text="Παρακαλώ εισάγετε έναν ΑΦΜ για έλεγχο")
-  lbl.pack()
+  #fool arround with styling
+  style = ttk.Style()
+  style.configure("valid.TLabel", background="green")
+  style.configure("empty.TLabel", background="white")
+  style.configure("invalid.TLabel", background="red")
+  style.configure("TNotebook", padding = 10)
+  
+  #create the Notebook
+  tabs = ttk.Notebook(main_window)
+  f_single = ttk.Frame(tabs)
+  f_file = ttk.Frame(tabs)
+  tabs.add(f_single, text="Μεμονομένα Α.Φ.Μ.")
+  tabs.add(f_file, text="Λίστα από αρχείο")
+  tabs.pack()
+  
+  #add some widgets in f_single tab
+  lbl_f_single_instructions = Label(f_single, text="Εισάγετε έναν ΑΦΜ για έλεγχο")
+  lbl_f_single_instructions.grid(column=0, row=0)
 
-  txt = Entry(main_window)
-  txt.focus()
-  txt.bind("<Return>", lambda event: checkme() )
-  txt.bind("<KP_Enter>", lambda event: checkme() )
-  txt.pack()
+  lbl_f_single_result = Label(f_single, text="", width=10, justify="center")
+  lbl_f_single_result.grid(column=1, row=0, rowspan=3, sticky="ewns")
 
-  Button(main_window, text="Έλεγχος", command=checkme).pack()
+  txt_f_single_entry = Entry(f_single)
+  txt_f_single_entry.focus()
+  txt_f_single_entry.bind("<Return>", lambda event: checkme() )
+  txt_f_single_entry.bind("<KP_Enter>", lambda event: checkme() )
+  txt_f_single_entry.grid(column=0,row=1)
+
+  Button_f_single_submit = Button(f_single, text="Έλεγχος", command=checkme)
+  Button_f_single_submit.grid(column=0,row=2)
 
   main_window.mainloop()
 #========================================================================

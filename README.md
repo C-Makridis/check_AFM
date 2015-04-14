@@ -1,26 +1,26 @@
-
 # check AFM
 Simple python script with Tkinter interface to check the validity of an AFM (Greek VAT Identification Number), based on its check digit.
 
-Not very usefull, it is just an exercise for me with Python, Tkinter and github.
-
-It does work (it has been tested against 8.000 valid AFM's), but I do not think someome will find it useful. Maybe just the fuction checkAFM() so as not to re-invent the wheel.
+It does work (it has been tested against 8.000 valid AFM's), but I'm not so sure that someone will find it useful. Maybe just the fuction checkAFM() so as not to re-invent the wheel.
 
 It is at this point compatible only with Python 3.x.
 
 It does recognise the international form of an AFM (prefixed with EL)
 
-It is one single file, that you could:
+It is one single file, that you can:
+
 1. import to use checkAFM() function
+```from checkAFM import checkAFM
+print ( checkAFM("123456789") )
+Please note that you should make sure to input the data as a string. NOT as an integer!
 2. execute from terminal:
-..* to check a small number of inputs
-..* to check any number of data from a txt file
-..* output can be either a file or the standar output (aka your screen)
-3. launch from your graphic enviroment and use its Graphical User Interface
-
-
+  * to check a small number of inputs
+  * to check any number of data from a txt file
+  * output can be either a file or the standar output (aka your screen)
+3. launch from your graphic enviroment (clickety-click) and use its Graphical User Interface
 
 #USAGE
+
 ##Command line
 * `checkAFM.py` from command line followed by any number of AFM's you want to check, one after the other, space seperated.
 * `checkAFM.py -i YOUR_FILE` to read data from a plain text file. It validates the whole line, so make sure the file has one AFM per line.
@@ -29,16 +29,20 @@ It is one single file, that you could:
 * add `-f` to force the program return only data that are found to by invalid AFM's.
 * add `-s` to include the number of valid and invalid AFM's at the end of the output.
 
-Note that `-t` and `-f` are mutually exclusive.
-If you ommit both of them, instead of a list of data, you would get a tab seperated set of AFM's with either `True` or `False` next to it.
+Note that `-t` and `-f` are mutually exclusive. If you include both of them, only the last one will be applied.
+If you ommit both of them, instead of a list of data, you'll get a tab seperated set of AFM's with either `True` or `False` next to it.
 
-* `checkAFM.py -h` would return instructions for the syntax, while `checkAFM.py -v` would return it's version.
+* `checkAFM.py -h` will return instructions for the syntax, while `checkAFM.py -v` will return it's version.
 
 
 e.g.: 
-```./checkAFM.py 012345678 123456789 234567890```
+```
+./checkAFM.py 012345678 123456789 234567890
+```
 or
-```python checkAFM.py 012345678 123456789 234567890```
+```
+python3 checkAFM.py 012345678 123456789 234567890
+```
 
 Returns a tab seperated list of AFM's, followed by either "True" (=valid AFM) or "False".
 
