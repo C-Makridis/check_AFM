@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-import sys
-if sys.version_info[0] < 3:
-  sys.exit("This script depends on Python 3. Aborting!")
+# -*- coding: utf8 -*-
 
-def checkAFM(afm):
-  """ Check the validity of an AFM number.
-      This only checks if it is a valid AFM number, not if it is actually used.
-      Input should be given as a string, a check is made, but under certain conditions, an exception whould be thrown with integers. (hint: leading zeros mean an octal system... there is no '8' or '9' in the octal system) """
+def check_afm(afm):
+  """Check the validity of an AFM number.
+
+  Only check if it is a valid AFM number via its check digit, not if it is actually used.
+  Return either True of False.
+  Input should be given as a string, under certain conditions, an exception whould be thrown with integers.
+  """
+  
   if not isinstance(afm, str):
-    raise TypeError( "checkAFM()", "You should feed to this function only strings to avoid exceptions and errors! Aborting." )
+    raise TypeError( "check_afm()", "You should feed to this function only strings to avoid exceptions and errors! Aborting." )
   if len(afm) == 11 and afm[:2].upper() == "EL":
     afm=afm[2:]
   if afm.isdigit() == True and len(afm) == 9: # simple initial check to see if the input has the sorrect length and is consisted by numbers
@@ -22,16 +24,16 @@ def checkAFM(afm):
   return False
 #========================================================================
 
-def tui():
+def _tui():
   #If executed from console, with arguments
   
   counter={"True":0, "False":0} #just to show some statistics at the end
   
-  def filter_output(afm, applied_filter):
-    result = checkAFM(afm)
+  def _filter_output(afm, applied_filter):
+    result = check_afm(afm)
     counter[str(result)] += 1
     if applied_filter == None:
-      return afm + "\t" + result + "\n"
+      return afm + "\t" + str(result) + "\n"
     elif applied_filter == True and result == True:
       return afm + "\n"
     elif applied_filter == False and result == False:
@@ -63,7 +65,7 @@ def tui():
     except:
       sys.exit("Unable to open file '"+ args.input_file[0]+"'. Aborting")
     for line in input_file:
-      a = filter_output(line.strip(), args.results)
+      a = _filter_output(line.strip(), args.results)
       if a != None:
         if args.output_file:
           output_file.write(a)
@@ -72,7 +74,7 @@ def tui():
 
   if args.AFM:
     for afm in args.AFM:
-      a = filter_output(afm, args.results)
+      a = _filter_output(afm, args.results)
       if a != None:
         if args.output_file:
           output_file.write(a) 
@@ -86,17 +88,17 @@ def tui():
       print("---------\n" + str(counter["True"]) + " valid and " + str(counter["False"]) + 
 	" invalid AFM's where found in a total of " + str( counter["True"] + counter["False"] ) + " entries.")
 #========================================================================
-def gui():
+def _gui():
   try:
     from tkinter import Tk, ttk
-    from tkinter.ttk import Button, Entry, Label, Style
+    from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Notebook, Style
   except:
     sys.exit("tkinter does not seem to be available at your system. Aborting.")
   
-  def checkme(): #check the input and accordingly give the output...
+  def _check_single(): #check the input and accordingly give the output...
     if txt_f_single_entry.get()=="":
       lbl_f_single_result.config(text="", style="TLabel")
-    elif checkAFM(txt_f_single_entry.get()):
+    elif check_afm(txt_f_single_entry.get()):
       lbl_f_single_result.config(text="Έγκυρο ΑΦΜ.", style="valid.TLabel")
     else:
       lbl_f_single_result.config(text="Άκυρο ΑΦΜ.", style="invalid.TLabel")
@@ -104,8 +106,8 @@ def gui():
   #create the window
   main_window = Tk()
   main_window.title("Έλεγχος εγκυρότητας Α.Φ.Μ.")
-  main_window.geometry("400x150")
-  main_window.minsize(400,150)
+  main_window.geometry("450x180")
+  main_window.minsize(450,180)
 
   #fool arround with styling
   style = ttk.Style()
@@ -115,11 +117,11 @@ def gui():
   style.configure("TNotebook", padding = 10)
   
   #create the Notebook
-  tabs = ttk.Notebook(main_window)
-  f_single = ttk.Frame(tabs)
-  f_file = ttk.Frame(tabs)
+  tabs = Notebook(main_window)
+  f_single = Frame(tabs)
+  f_file = Frame(tabs)
   tabs.add(f_single, text="Μεμονομένα Α.Φ.Μ.")
-  tabs.add(f_file, text="Λίστα από αρχείο")
+  tabs.add(f_file, text="Λίστα από αρχείο", state="disabled")
   tabs.pack()
   
   #add some widgets in f_single tab
@@ -129,17 +131,50 @@ def gui():
   lbl_f_single_result = Label(f_single, text="", width=10, justify="center")
   lbl_f_single_result.grid(column=1, row=0, rowspan=3, sticky="ewns")
 
-  txt_f_single_entry = Entry(f_single)
+  txt_f_single_entry = Entry(f_single, width=11)
   txt_f_single_entry.focus()
-  txt_f_single_entry.bind("<Return>", lambda event: checkme() )
-  txt_f_single_entry.bind("<KP_Enter>", lambda event: checkme() )
+  txt_f_single_entry.bind("<KeyRelease>", lambda e: _check_single() )
   txt_f_single_entry.grid(column=0,row=1)
 
-  Button_f_single_submit = Button(f_single, text="Έλεγχος", command=checkme)
-  Button_f_single_submit.grid(column=0,row=2)
+  btn_f_single_submit = Button(f_single, text="Έλεγχος", command=_check_single)
+  btn_f_single_submit.grid(column=0,row=2)
+  
+  #add some widgets in f_file tab
+  lbl_f_file_finput = Label(f_file, text="Άνοιγμα...")
+  lbl_f_file_finput.grid(column=0, row=0)
+  
+  lbl_f_file_foutput = Label(f_file, text="Αποθήκευση ως...")
+  lbl_f_file_foutput.grid(column=0, row=1)
+  
+  f_result = LabelFrame(f_file, text="Σύνοψη")
+  f_result.grid(column=3, row=0, rowspan=2, sticky="ewns")
+  
+  lbl_f_file_result = Label(f_result, text="Σύνολο: \nΈγκυρα: \nΆκυρα:", width=12)#TODO bring results
+  lbl_f_file_result.pack()
+  
+  txt_f_file_finput = Entry(f_file)
+  txt_f_file_finput.grid(column=1, row=0)
+  
+  txt_f_file_foutput = Entry(f_file)
+  txt_f_file_foutput.grid(column=1, row=1)
+  
+  btn_f_file_finput = Button(f_file, text="...", width=3) #TODO add command
+  btn_f_file_finput.grid(column=2, row=0, sticky="W")
+  
+  btn_f_file_foutput = Button(f_file, text="...", width=3) #TODO add command
+  btn_f_file_foutput.grid(column=2, row=1, sticky="W")
+  
+  btn_f_file_submit = Button(f_file, text="Επεξεργασία") #TODO add command
+  btn_f_file_submit.grid(column=0, row=2, columnspan=3)
+  
+  btn_main_exit = Button(main_window, text="Έξοδος", command=sys.exit)
+  btn_main_exit.pack(side="bottom", anchor="e")
 
   main_window.mainloop()
 #========================================================================
 if __name__ == "__main__":
-  if len( sys.argv ) > 1: tui()
-  else: gui()
+  import sys
+  if sys.version_info[0] < 3:
+    sys.exit("This script depends on Python 3. Aborting!")
+  if len( sys.argv ) > 1: _tui()
+  else: _gui()
