@@ -10,7 +10,7 @@ It does recognise the international form of an AFM (prefixed with EL)
 It is one single file, that you can:
 
 1. import to use check_afm() function
-  *For Python 2
+  * For Python 2
 ```
 from checkAFM import check_afm
 print check_afm("123456789")
