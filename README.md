@@ -3,20 +3,23 @@ Simple python script with Tkinter interface to check the validity of an AFM (Gre
 
 It does work (it has been tested against 8.000 valid AFM's), but I'm not so sure that someone will find it useful. Maybe just the fuction check_afm() so as not to re-invent the wheel.
 
-You can import this as a module and use check_afm() funtion in both Python 2 (tested with 2.7.6) and Python 3 (tested with 3.4.0)
-But you can only run it only with Python 3, both in console and GUI.
+You can import this as a module and use check_afm() funtion in both Python 2 (tested with 2.7.6) and Python 3 (tested with 3.4.0), but you can only run it only with Python 3, both in console and GUI.
 
 It does recognise the international form of an AFM (prefixed with EL)
 
 It is one single file, that you can:
 
 1. import to use check_afm() function
-For Python 2
-```from checkAFM import *
-print check_afm("123456789")```
-For Python 3
-```from checkAFM import *
-print ( check_afm("123456789") )```
+  *For Python 2
+```
+from checkAFM import check_afm
+print check_afm("123456789")
+```
+  * For Python 3
+```
+from checkAFM import check_afm
+print ( check_afm("123456789") )
+```
 
 Please note that you should make sure to input the data as a string. NOT as an integer!
 

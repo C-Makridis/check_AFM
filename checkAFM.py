@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
+"""Check the validity of an AFM number (Greek VAT code).
 
+Only this modules check_afm() funtion is usable by importing it.
+Please review check_afm.__doc__
+"""
 def check_afm(afm):
-  """Check the validity of an AFM number.
+  """Check the validity of an AFM number (Greek VAT code).
 
-  Only check if it is a valid AFM number via its check digit, not if it is actually used.
+  Check if input is a valid AFM number via its check digit (not if it is actually used).
   Return either True of False.
-  Input should be given as a string, under certain conditions, an exception whould be thrown with integers.
+  Input should be given as a string. An integer, under certain conditions, could through an exception.
   """
   
   if not isinstance(afm, str):
@@ -90,8 +94,8 @@ def _tui():
 #========================================================================
 def _gui():
   try:
-    from tkinter import Tk, ttk
-    from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Notebook, Style
+    from tkinter import Tk, ttk, filedialog, StringVar, IntVar
+    from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Notebook, Radiobutton, Style
   except:
     sys.exit("tkinter does not seem to be available at your system. Aborting.")
   
@@ -102,12 +106,19 @@ def _gui():
       lbl_f_single_result.config(text="Έγκυρο ΑΦΜ.", style="valid.TLabel")
     else:
       lbl_f_single_result.config(text="Άκυρο ΑΦΜ.", style="invalid.TLabel")
+  
+  def _select_input_file():
+    #input_file
+    strv_f_file_input.set(filedialog.askopenfilename(title="Άνοιγμα αρχείου"))
+  def _select_output_file():
+    strv_f_file_output.set(filedialog.asksaveasfilename(title="Αποθήκευση ως..."))
+    
 
   #create the window
   main_window = Tk()
   main_window.title("Έλεγχος εγκυρότητας Α.Φ.Μ.")
-  main_window.geometry("450x180")
-  main_window.minsize(450,180)
+  main_window.geometry("600x180")
+  main_window.minsize(600,180)
 
   #fool arround with styling
   style = ttk.Style()
@@ -122,59 +133,67 @@ def _gui():
   f_file = Frame(tabs)
   tabs.add(f_single, text="Μεμονομένα Α.Φ.Μ.")
   tabs.add(f_file, text="Λίστα από αρχείο", state="disabled")
-  tabs.pack()
+  tabs.pack(anchor="nw")
   
   #add some widgets in f_single tab
   lbl_f_single_instructions = Label(f_single, text="Εισάγετε έναν ΑΦΜ για έλεγχο")
   lbl_f_single_instructions.grid(column=0, row=0)
 
   lbl_f_single_result = Label(f_single, text="", width=10, justify="center")
-  lbl_f_single_result.grid(column=1, row=0, rowspan=3, sticky="ewns")
+  lbl_f_single_result.grid(column=1, row=0, rowspan=2, sticky="ewns")
 
   txt_f_single_entry = Entry(f_single, width=11)
   txt_f_single_entry.focus()
   txt_f_single_entry.bind("<KeyRelease>", lambda e: _check_single() )
   txt_f_single_entry.grid(column=0,row=1)
 
-  btn_f_single_submit = Button(f_single, text="Έλεγχος", command=_check_single)
-  btn_f_single_submit.grid(column=0,row=2)
-  
+  #btn_f_single_submit = Button(f_single, text="Έλεγχος", command=_check_single)
+  #btn_f_single_submit.grid(column=0,row=2)
+    
   #add some widgets in f_file tab
   lbl_f_file_finput = Label(f_file, text="Άνοιγμα...")
   lbl_f_file_finput.grid(column=0, row=0)
+  strv_f_file_input = StringVar()
+  txt_f_file_finput = Entry(f_file, textvariable = strv_f_file_input)
+  txt_f_file_finput.grid(column=1, row=0)
+  btn_f_file_finput = Button(f_file, text="...", width=3, command=_select_input_file) #TODO add command
+  btn_f_file_finput.grid(column=2, row=0, sticky="W")
   
   lbl_f_file_foutput = Label(f_file, text="Αποθήκευση ως...")
   lbl_f_file_foutput.grid(column=0, row=1)
-  
-  f_result = LabelFrame(f_file, text="Σύνοψη")
-  f_result.grid(column=3, row=0, rowspan=2, sticky="ewns")
-  
-  lbl_f_file_result = Label(f_result, text="Σύνολο: \nΈγκυρα: \nΆκυρα:", width=12)#TODO bring results
-  lbl_f_file_result.pack()
-  
-  txt_f_file_finput = Entry(f_file)
-  txt_f_file_finput.grid(column=1, row=0)
-  
-  txt_f_file_foutput = Entry(f_file)
+  strv_f_file_output = StringVar()
+  txt_f_file_foutput = Entry(f_file, textvariable = strv_f_file_output)
   txt_f_file_foutput.grid(column=1, row=1)
-  
-  btn_f_file_finput = Button(f_file, text="...", width=3) #TODO add command
-  btn_f_file_finput.grid(column=2, row=0, sticky="W")
-  
-  btn_f_file_foutput = Button(f_file, text="...", width=3) #TODO add command
+  btn_f_file_foutput = Button(f_file, text="...", width=3, command=_select_output_file) #TODO add command
   btn_f_file_foutput.grid(column=2, row=1, sticky="W")
   
-  btn_f_file_submit = Button(f_file, text="Επεξεργασία") #TODO add command
+  lf_filter = LabelFrame(f_file, text="Επιστροφή")
+  lf_filter.grid(column=3, row=0, rowspan=2, sticky="ewns")
+  intvar_filter_sel = IntVar()
+  rb_filter_all = Radiobutton(lf_filter, text="Όλων", variable="intvar_filter_sel", value=1) #TODO maybe add command
+  rb_filter_all.pack(anchor="w")
+  rb_filter_all.invoke()
+  rb_filter_true = Radiobutton(lf_filter, text="Έγκυρων", variable="intvar_filter_sel", value=2)
+  rb_filter_true.pack(anchor="w")
+  rb_filter_false = Radiobutton(lf_filter, text="Άκυρων", variable="intvar_filter_sel", value=3)
+  rb_filter_false.pack(anchor="w")
+  
+  lf_result = LabelFrame(f_file, text="Σύνοψη")
+  lf_result.grid(column=4, row=0, rowspan=2, sticky="ewns")
+  lbl_f_file_result = Label(lf_result, text="Σύνολο: \nΈγκυρα: \nΆκυρα:", width=12)#TODO bring results
+  lbl_f_file_result.pack()
+  
+  btn_f_file_submit = Button(f_file, text="Επεξεργασία", state="disabled") #TODO add command
   btn_f_file_submit.grid(column=0, row=2, columnspan=3)
   
   btn_main_exit = Button(main_window, text="Έξοδος", command=sys.exit)
-  btn_main_exit.pack(side="bottom", anchor="e")
+  btn_main_exit.pack(anchor="se")
 
   main_window.mainloop()
 #========================================================================
 if __name__ == "__main__":
   import sys
   if sys.version_info[0] < 3:
-    sys.exit("This script depends on Python 3. Aborting!")
+    sys.exit("This script depends on Python 3. You can not run it with Python 2, but you can import and use its main funtion check_afm().")
   if len( sys.argv ) > 1: _tui()
   else: _gui()
