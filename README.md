@@ -11,11 +11,11 @@ It is one single file, that you can:
 
 1. import to use check_afm() function
   * For Python 2
-  ```from checkAFM import check_afm
-  print check_afm("123456789")```
+    ```from checkAFM import check_afm
+    print check_afm("123456789")```
   * For Python 3
-  ```from checkAFM import check_afm
-  print ( check_afm("123456789") )```
+    ```from checkAFM import check_afm
+    print ( check_afm("123456789") )```
 
 Please note that you should make sure to input the data as a string. NOT as an integer!
 
