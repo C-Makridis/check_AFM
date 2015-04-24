@@ -93,7 +93,7 @@ def _tui():
 #========================================================================
 def _gui():
   try:
-    from tkinter import Tk, ttk, filedialog, StringVar, IntVar
+    from tkinter import Tk, ttk, filedialog, messagebox, StringVar, IntVar
     from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Notebook, Radiobutton, Style
   except:
     sys.exit("Unable to load tkinter. Aborting.")
@@ -126,7 +126,8 @@ def _gui():
       input_file = open(input_filepath, "r")
       output_file = open(output_filepath, "w")
     except:
-      print("Unable handle the files")
+      a=messagebox.showerror(title="Σφάλμα", message="Αδυναμία διαχείρησης των αρχείων που ορίσατε.\n\nΠαρακαλώ επιβεβαιώστε πως το αρχείο με τα δεδομένα υπάρχει, πως έχετε δικαιώματα ανάγνωσης, και πως έχετε δικαιώματα εγγραφής στον κατάλογο εξαγωγής των αποτελεσμάτων.")
+      return
     counter = {True:0, False:0}
     for entry in input_file:
       validation = check_afm(entry.strip())

@@ -1,7 +1,7 @@
 # check AFM
 Simple python script with Tkinter interface to check the validity of an AFM (Greek VAT Identification Number), based on its check digit.
 
-You can import this as a module and use check_afm() funtion in both Python 2 (tested with 2.7.6) and Python 3 (tested with 3.4.0), but you can only run it only with Python 3, both in console and GUI.
+You can import this as a module and use check_afm() funtion in both Python 2 (tested with 2.7.6) and Python 3 (tested with 3.4.0), but you can only run it with Python 3, both in console and GUI.
 
 It does recognise the international form of an AFM (prefixed with EL)
 
