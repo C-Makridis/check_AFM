@@ -17,7 +17,7 @@ def check_afm(afm):
     raise TypeError( "check_afm()", "You should feed to this function only strings to avoid exceptions and errors! Aborting." )
   if len(afm) == 11 and afm[:2].upper() == "EL":
     afm=afm[2:]
-  if afm.isdigit() == True and len(afm) == 9: # simple initial check to see if the input has the sorrect length and is consisted by numbers
+  if afm.isdigit() == True and len(afm) == 9:
     i, sums = 256, 0
     for digit in afm[:-1]:
       sums += int(digit) * i
@@ -31,11 +31,11 @@ def check_afm(afm):
 def _tui():
   #If executed from console, with arguments
   
-  counter={"True":0, "False":0} #just to show some statistics at the end
+  counter={True:0, False:0} #just to show some statistics at the end
   
   def _filter_output(afm, applied_filter):
     result = check_afm(afm)
-    counter[str(result)] += 1
+    counter[result] += 1
     if applied_filter == None:
       return afm + "\t" + str(result) + "\n"
     elif applied_filter == True and result == True:
@@ -44,8 +44,7 @@ def _tui():
       return afm + "\n"
   
   import argparse
-  arg_parser = argparse.ArgumentParser(description = "Utility to check if input is a valid AFM (Greek VAT number). Input file should have one entry per line",
-				       epilog="Note that -t and -f are mutually exclusive.")
+  arg_parser = argparse.ArgumentParser(description = "Utility to check if input is a valid AFM (Greek VAT number). Input file should have one entry per line", epilog="Note that -t and -f are mutually exclusive.")
   arg_parser.add_argument("-t", "--true_only", dest="results", action="store_const", const=True, default=None,
 			  help="Return only a list of valid AFM's. Breaks -f!")
   arg_parser.add_argument("-f", "--false_only", dest="results", action="store_const", const=False, default=None,
@@ -53,7 +52,7 @@ def _tui():
   arg_parser.add_argument("-i", "--input_file", nargs=1, help="File to read AFM's from. It should have one entry per line.")
   arg_parser.add_argument("-o", "--output_file", nargs=1, help="File to save results to.")
   arg_parser.add_argument("-s", "--stats", action="store_const", const=True, help="Show number of valid and invalid AFM's at the end.")
-  arg_parser.add_argument("-v", "--version", action="version", version="P3x / 1.0")
+  arg_parser.add_argument("-v", "--version", action="version", version="P3x / 2.0")
   arg_parser.add_argument("AFM", nargs="*")
   args = arg_parser.parse_args()
 
@@ -89,17 +88,17 @@ def _tui():
       output_file.write("---------\n" + str(counter["True"]) + " valid and " + str(counter["False"]) + 
 	" invalid AFM's where found in a total of " + str( counter["True"] + counter["False"] ) + " entries.")
     else:
-      print("---------\n" + str(counter["True"]) + " valid and " + str(counter["False"]) + 
-	" invalid AFM's where found in a total of " + str( counter["True"] + counter["False"] ) + " entries.")
+      print("---------\n" + str(counter[True]) + " valid and " + str(counter[False]) + 
+	" invalid AFM's where found in a total of " + str( counter[True] + counter[False] ) + " entries.")
 #========================================================================
 def _gui():
   try:
     from tkinter import Tk, ttk, filedialog, StringVar, IntVar
     from tkinter.ttk import Button, Entry, Frame, Label, LabelFrame, Notebook, Radiobutton, Style
   except:
-    sys.exit("tkinter does not seem to be available at your system. Aborting.")
+    sys.exit("Unable to load tkinter. Aborting.")
   
-  def _check_single(): #check the input and accordingly give the output...
+  def _check_single(): #check the input and accordingly give the output... for the f_single tab
     if txt_f_single_entry.get()=="":
       lbl_f_single_result.config(text="", style="TLabel")
     elif check_afm(txt_f_single_entry.get()):
@@ -108,15 +107,41 @@ def _gui():
       lbl_f_single_result.config(text="Άκυρο ΑΦΜ.", style="invalid.TLabel")
   
   def _select_input_file():
-    #input_file
     strv_f_file_input.set(filedialog.askopenfilename(title="Άνοιγμα αρχείου"))
+    if strv_f_file_input.get() != "" and strv_f_file_output.get() != "":
+      btn_f_file_submit.config(state="normal")
+    else: btn_f_file_submit.config(state="disabled")
+#TODO a much better mechanism to enable / disable btn_f_file_submit is needed.
   def _select_output_file():
     strv_f_file_output.set(filedialog.asksaveasfilename(title="Αποθήκευση ως..."))
-    
+    if strv_f_file_input.get() != "" and strv_f_file_output.get() != "":
+      btn_f_file_submit.config(state="normal")
+    else: btn_f_file_submit.config(state="disabled")
+  
+  def _check_file():#TODO this could / should be merged with the TUI version...
+    input_filepath = strv_f_file_input.get()
+    output_filepath = strv_f_file_output.get()
+    filter_output = intvar_filter_sel.get()
+    try:
+      input_file = open(input_filepath, "r")
+      output_file = open(output_filepath, "w")
+    except:
+      print("Unable handle the files")
+    counter = {True:0, False:0}
+    for entry in input_file:
+      validation = check_afm(entry.strip())
+      counter[validation]+=1
+      if filter_output == 3 and validation == False:
+        output_file.write(entry)
+      elif filter_output == 2 and validation == True:
+        output_file.write(entry)
+      elif filter_output == 1:
+        output_file.write(entry.strip() + "\t" + str(validation) + "\n\r")
+    lbl_f_file_result.config(text="Σύνολο: "+str(counter[True]+counter[False])+"\nΈγκυρα: "+str(counter[True])+"\nΆκυρα: "+str(counter[False]))
 
   #create the window
   main_window = Tk()
-  main_window.title("Έλεγχος εγκυρότητας Α.Φ.Μ.")
+  main_window.title("Έλεγχος εγκυρότητας Α.Φ.Μ. (v 2.0)")
   main_window.geometry("600x180")
   main_window.minsize(600,180)
 
@@ -132,7 +157,7 @@ def _gui():
   f_single = Frame(tabs)
   f_file = Frame(tabs)
   tabs.add(f_single, text="Μεμονομένα Α.Φ.Μ.")
-  tabs.add(f_file, text="Λίστα από αρχείο", state="disabled")
+  tabs.add(f_file, text="Λίστα από αρχείο")#add state="disabled" prior to git push until ready
   tabs.pack(anchor="nw")
   
   #add some widgets in f_single tab
@@ -156,7 +181,7 @@ def _gui():
   strv_f_file_input = StringVar()
   txt_f_file_finput = Entry(f_file, textvariable = strv_f_file_input)
   txt_f_file_finput.grid(column=1, row=0)
-  btn_f_file_finput = Button(f_file, text="...", width=3, command=_select_input_file) #TODO add command
+  btn_f_file_finput = Button(f_file, text="...", width=3, command=_select_input_file)
   btn_f_file_finput.grid(column=2, row=0, sticky="W")
   
   lbl_f_file_foutput = Label(f_file, text="Αποθήκευση ως...")
@@ -164,26 +189,26 @@ def _gui():
   strv_f_file_output = StringVar()
   txt_f_file_foutput = Entry(f_file, textvariable = strv_f_file_output)
   txt_f_file_foutput.grid(column=1, row=1)
-  btn_f_file_foutput = Button(f_file, text="...", width=3, command=_select_output_file) #TODO add command
+  btn_f_file_foutput = Button(f_file, text="...", width=3, command=_select_output_file)
   btn_f_file_foutput.grid(column=2, row=1, sticky="W")
   
   lf_filter = LabelFrame(f_file, text="Επιστροφή")
   lf_filter.grid(column=3, row=0, rowspan=2, sticky="ewns")
   intvar_filter_sel = IntVar()
-  rb_filter_all = Radiobutton(lf_filter, text="Όλων", variable="intvar_filter_sel", value=1) #TODO maybe add command
+  rb_filter_all = Radiobutton(lf_filter, text="Όλων", variable=intvar_filter_sel, value=1) #TODO maybe add command
   rb_filter_all.pack(anchor="w")
   rb_filter_all.invoke()
-  rb_filter_true = Radiobutton(lf_filter, text="Έγκυρων", variable="intvar_filter_sel", value=2)
+  rb_filter_true = Radiobutton(lf_filter, text="Έγκυρων", variable=intvar_filter_sel, value=2)
   rb_filter_true.pack(anchor="w")
-  rb_filter_false = Radiobutton(lf_filter, text="Άκυρων", variable="intvar_filter_sel", value=3)
+  rb_filter_false = Radiobutton(lf_filter, text="Άκυρων", variable=intvar_filter_sel, value=3)
   rb_filter_false.pack(anchor="w")
   
   lf_result = LabelFrame(f_file, text="Σύνοψη")
   lf_result.grid(column=4, row=0, rowspan=2, sticky="ewns")
-  lbl_f_file_result = Label(lf_result, text="Σύνολο: \nΈγκυρα: \nΆκυρα:", width=12)#TODO bring results
+  lbl_f_file_result = Label(lf_result, text="", width=12)#TODO bring results
   lbl_f_file_result.pack()
   
-  btn_f_file_submit = Button(f_file, text="Επεξεργασία", state="disabled") #TODO add command
+  btn_f_file_submit = Button(f_file, text="Επεξεργασία", state="disabled", command=_check_file)
   btn_f_file_submit.grid(column=0, row=2, columnspan=3)
   
   btn_main_exit = Button(main_window, text="Έξοδος", command=sys.exit)

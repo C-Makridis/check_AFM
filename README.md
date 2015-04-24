@@ -1,15 +1,24 @@
 # check AFM
 Simple python script with Tkinter interface to check the validity of an AFM (Greek VAT Identification Number), based on its check digit.
 
-It does work (it has been tested against 8.000 valid AFM's), but I'm not so sure that someone will find it useful. Maybe just the fuction check_afm() so as not to re-invent the wheel.
-
 You can import this as a module and use check_afm() funtion in both Python 2 (tested with 2.7.6) and Python 3 (tested with 3.4.0), but you can only run it only with Python 3, both in console and GUI.
 
 It does recognise the international form of an AFM (prefixed with EL)
 
+Unfortunately, the GUI at this point is in Greek language only.
+
 It is one single file, that you can:
 
-1. import to use check_afm() function
+1. launch from your graphic enviroment (clickety-click) and use its Graphical User Interface (only with Python 3)
+  * to check singularly afm's
+  * to submit a text file with values (one per line) you want to check.
+
+2. execute from terminal: (only with Python 3)
+  * to check a small number of inputs
+  * to check any number of data from a txt file
+  * output can be either a file or the standar output (aka your screen)
+
+3. import to use check_afm() function on your own script (works both with Python 2 and Python 3)
   * For Python 2
     ```from checkAFM import check_afm
     print check_afm("123456789")```
@@ -17,13 +26,10 @@ It is one single file, that you can:
     ```from checkAFM import check_afm
     print ( check_afm("123456789") )```
 
-Please note that you should make sure to input the data as a string. NOT as an integer!
+  Please note that you should make sure to input the data as a string. NOT as an integer!
 
-2. execute from terminal: (only Python 3)
-  * to check a small number of inputs
-  * to check any number of data from a txt file
-  * output can be either a file or the standar output (aka your screen)
-3. launch from your graphic enviroment (clickety-click) and use its Graphical User Interface (only Python 3)
+
+It has been tested against 8.000 valid AFM's without any hiccups.
 
 #USAGE
 
@@ -56,14 +62,13 @@ Returns a tab seperated list of AFM's, followed by either "True" (=valid AFM) or
 creates the file `results.txt` which includes only the invalid data passed to the program.
 
 ##GUI
-Just double click.... I think it's quite self-explanatory
-You could also launch from console without any arguments.
+Just double click to launch (you could also launch from console without any arguments).
+You can either type a single AFM to check, or select a text file with data you want to check (one per line) and where your results should be saved. You can limit the results to either valid or invalid ones if it suites you.
 
-At this point the GUI lacks of the various options the script has at console.
 
 #TODO:
 More like a list of thinks that come to my mind that could be done, not that will be done necessarily.
-* alter the GUI to accept a list of values, accept files of data, export to files etc.
+* yeah.... the GUI is quite ugly, I know...
+* multilingual support for GUI...
 * maybe give an option to pass valid AFM's to web services like http://ec.europa.eu/taxation_customs/vies/vatRequest.html
-* test in other platforms (Windows / MacOS)
-* add support for other countries (longshot but I thought I should mention it)
+* test in other platforms (Windows / MacOS), even though it should work as is. (please if you happen to do so, give me some feedback)
